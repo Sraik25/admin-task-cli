@@ -1,5 +1,6 @@
-import { prompt, QuestionCollection, Answers } from 'inquirer';
+import { prompt, QuestionCollection } from 'inquirer';
 import 'colors';
+import { ITask } from '../models/tasks';
 
 const menuOptions: QuestionCollection = [
   {
@@ -84,4 +85,78 @@ const readInput = async (message: string) => {
   return desc;
 };
 
-export { inquirerMenu, pause, readInput };
+const listTaskDelete = async (tasks: ITask[] = []) => {
+  const choices = tasks.map((task, index) => {
+    const idx = index + 1 + '.';
+
+    return {
+      value: task.id,
+      name: `${idx.green} ${task.desc} `,
+    };
+  });
+
+  choices.unshift({
+    value: '0'.green,
+    name: `${'0'.green} Cancelar`,
+  });
+
+  const questions: QuestionCollection = [
+    {
+      type: 'list',
+      name: 'id',
+      message: 'Borrar',
+      choices,
+    },
+  ];
+
+  const { id } = await prompt(questions);
+
+  return id;
+};
+
+const confirm = async (message: string) => {
+  const questions: QuestionCollection = [
+    {
+      type: 'confirm',
+      name: 'ok',
+      message,
+    },
+  ];
+
+  const { ok } = await prompt(questions);
+  return ok;
+};
+
+const showListCheckBox = async (tasks: ITask[] = []) => {
+  const choices = tasks.map((task, index) => {
+    const idx = index + 1 + '.';
+
+    return {
+      value: task.id,
+      name: `${idx.green} ${task.desc} `,
+      checked: task.completed ? true : false,
+    };
+  });
+
+  const questions: QuestionCollection = [
+    {
+      type: 'checkbox',
+      name: 'ids',
+      message: 'Selecciones',
+      choices,
+    },
+  ];
+
+  const { ids } = await prompt(questions);
+
+  return ids;
+};
+
+export {
+  confirm,
+  inquirerMenu,
+  listTaskDelete,
+  pause,
+  showListCheckBox,
+  readInput,
+};
